@@ -44,7 +44,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** None
 - **Validation:** `pnpm prisma validate`
 
-### Task 1.2: Add rpeRequestId FK to RPESubmission
+### Task 1.2: Add rpeRequestId FK to RPESubmission [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add optional FK field and relation to `RPESubmission` model:
   ```prisma
