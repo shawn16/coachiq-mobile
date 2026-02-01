@@ -303,7 +303,7 @@ Phase 4: Validation
 - **Dependencies:** Tasks 3.1, 3.2, 3.3
 - **Validation:** `pnpm lint` exits 0
 
-### Task 4.2: Run Build / Typecheck
+### Task 4.2: Run Build / Typecheck [DONE]
 - **Files:** None (read-only)
 - **Change:** Run `pnpm build` (or `npx tsc --noEmit` if no build script) to verify the production build succeeds and all types are correct.
 - **Spec:** AGENTS.md validation requirement
