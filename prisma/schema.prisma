@@ -1,0 +1,464 @@
+// CoachIQ Prisma Schema
+// Workout recording and analytics platform for high school XC/track coaches
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DIRECT_URL")
+}
+
+// ============================================
+// Core Tables
+// ============================================
+
+// 2.1 Coach model
+model Coach {
+    id        String   @id @default(uuid())
+    email     String   @unique
+    name      String?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    teams Team[]
+
+    @@map("coaches")
+}
+
+// 2.2 Team model
+model Team {
+    id        String   @id @default(uuid())
+    coachId   String   @map("coach_id")
+    name      String
+    school    String?
+    season    String? // e.g., "XC", "Track"
+    year      Int?
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    coach    Coach     @relation(fields: [coachId], references: [id], onDelete: Cascade)
+    groups   Group[]
+    athletes Athlete[]
+    workouts Workout[]
+
+    @@index([coachId])
+    @@map("teams")
+}
+
+// 2.3 Group model
+model Group {
+    id              String   @id @default(uuid())
+    teamId          String   @map("team_id")
+    name            String // e.g., "Varsity Boys XC", "JV Girls 1600"
+    color           String   @default("gray") // Color key: gray, red, orange, yellow, green, blue, purple, pink
+    isAlpha         Boolean  @default(false) @map("is_alpha")
+    scalePercentage Int?     @map("scale_percentage")
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    athletes      Athlete[]
+    workoutGroups WorkoutGroup[]
+
+    @@index([teamId])
+    @@map("groups")
+}
+
+// 2.4 Athlete model
+enum AthleteStatus {
+    pending
+    active
+    inactive
+}
+
+model Athlete {
+    id               String        @id @default(uuid())
+    teamId           String        @map("team_id")
+    groupId          String?       @map("group_id")
+    firstName        String        @map("first_name")
+    lastName         String        @map("last_name")
+    grade            Int?
+    current1600mTime Int?          @map("current_1600m_time") // Time in seconds (e.g., 300 = 5:00)
+    targetEvent      String?       @map("target_event") // e.g., "5k", "1600m", "800m"
+    email            String?
+    phone            String?
+    inviteCode       String?       @unique @map("invite_code")
+    inviteCodeExpiry DateTime?     @map("invite_code_expiry")
+    status           AthleteStatus @default(pending)
+    deletedAt        DateTime?     @map("deleted_at") // Soft delete
+    createdAt        DateTime      @default(now()) @map("created_at")
+    updatedAt        DateTime      @updatedAt @map("updated_at")
+
+    // Relations
+    team                Team                     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    group               Group?                   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+    workoutResults      WorkoutResult[]
+    wellnessChecks      WellnessCheck[]
+    rpeSubmissions      RPESubmission[]
+    athleteTargetEvents AthleteTargetEvent[]
+    personalRecords     PersonalRecord[]
+    observations        Observation[]
+    baselineHistory     AthleteBaselineHistory[]
+
+    @@index([teamId])
+    @@index([groupId])
+    @@index([status])
+    @@index([teamId, status])
+    @@map("athletes")
+}
+
+// 2.4.1 AthleteBaselineHistory model - tracks historical baseline values for accurate retrospective analytics
+model AthleteBaselineHistory {
+    id          String   @id @default(uuid())
+    athleteId   String   @map("athlete_id")
+    time1600m   Int      @map("time_1600m") // Baseline in seconds
+    effectiveAt DateTime @map("effective_at") // When this baseline became active
+    source      String? // "manual", "race", "time_trial", "migration"
+    notes       String? // Optional context
+    createdAt   DateTime @default(now()) @map("created_at")
+
+    // Relations
+    athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+    @@index([athleteId])
+    @@index([athleteId, effectiveAt])
+    @@map("athlete_baseline_history")
+}
+
+// ============================================
+// Workout Tables
+// ============================================
+
+// 2.5 Workout model
+enum WorkoutType {
+    interval
+    tempo
+    long_run
+    recovery
+    race
+    fartlek
+    hill
+    threshold
+}
+
+enum PTGZone {
+    endurance
+    stamina
+    aerobic_power
+    speed
+}
+
+model Workout {
+    id                String      @id @default(uuid())
+    teamId            String      @map("team_id")
+    date              DateTime    @db.Date
+    name              String
+    description       String?
+    workoutType       WorkoutType @map("workout_type")
+    structure         String? // e.g., "6x800m", "4 mile tempo"
+    structureJson     Json?       @map("structure_json") // Full WorkoutStructure object for edit mode
+    targetPace        Int?        @map("target_pace") // Pace in seconds per mile
+    targetEventId     String?     @map("target_event_id")
+    restInterval      Int?        @map("rest_interval") // Rest in seconds
+    ptgZone           PTGZone?    @map("ptg_zone")
+    specificityRating Int?        @map("specificity_rating") // 1-5
+    weatherTemp       Int?        @map("weather_temp") // Temperature in Fahrenheit
+    weatherConditions String?     @map("weather_conditions")
+    weatherWind       String?     @map("weather_wind")
+    createdAt         DateTime    @default(now()) @map("created_at")
+    updatedAt         DateTime    @updatedAt @map("updated_at")
+
+    // Relations
+    team           Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    targetEvent    TargetEvent?    @relation(fields: [targetEventId], references: [id], onDelete: SetNull)
+    workoutResults WorkoutResult[]
+    workoutGroups  WorkoutGroup[]
+    observations   Observation[]
+
+    @@index([teamId])
+    @@index([date])
+    @@index([teamId, date])
+    @@index([workoutType])
+    @@index([ptgZone])
+    @@map("workouts")
+}
+
+// 2.5.1 WorkoutGroup junction model (group-based workout scaling)
+model WorkoutGroup {
+    id        String   @id @default(uuid())
+    workoutId String   @map("workout_id")
+    groupId   String   @map("group_id")
+    isSource  Boolean  @default(false) @map("is_source")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    // Relations
+    workout Workout @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+    group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+    @@unique([workoutId, groupId])
+    @@index([workoutId])
+    @@index([groupId])
+    @@map("workout_groups")
+}
+
+// 2.6 WorkoutResult model
+model WorkoutResult {
+    id            String   @id @default(uuid())
+    workoutId     String   @map("workout_id")
+    athleteId     String   @map("athlete_id")
+    splits        Json? // JSON array of times in seconds
+    avgPace       Int?     @map("avg_pace") // Average pace in seconds per mile
+    weci          Float? // Workout Execution Consistency Index (0-100)
+    rpe           Int? // Rate of Perceived Exertion (1-10)
+    fpr           Float? // Fitness-Performance Ratio
+    completedReps Int?     @map("completed_reps")
+    totalReps     Int?     @map("total_reps")
+    notes         String?
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    workout       Workout        @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+    athlete       Athlete        @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    splitDetails  Split[]
+    rpeSubmission RPESubmission?
+
+    @@unique([workoutId, athleteId])
+    @@index([workoutId])
+    @@index([athleteId])
+    @@index([weci])
+    @@index([createdAt])
+    @@map("workout_results")
+}
+
+// 2.7 Split model (for detailed analysis)
+model Split {
+    id              String   @id @default(uuid())
+    workoutResultId String   @map("workout_result_id")
+    repNumber       Int      @map("rep_number")
+    time            Int // Time in seconds (e.g., 145 for 2:25)
+    pace            Int? // Pace in seconds per mile
+    offPaceAmount   Int?     @map("off_pace_amount") // Seconds off target pace
+    createdAt       DateTime @default(now()) @map("created_at")
+
+    // Relations
+    workoutResult WorkoutResult @relation(fields: [workoutResultId], references: [id], onDelete: Cascade)
+
+    @@unique([workoutResultId, repNumber])
+    @@map("splits")
+}
+
+// ============================================
+// Wellness & RPE Tables
+// ============================================
+
+// 2.8 WellnessCheck model
+model WellnessCheck {
+    id           String   @id @default(uuid())
+    athleteId    String   @map("athlete_id")
+    date         DateTime @db.Date
+    submittedAt  DateTime @default(now()) @map("submitted_at")
+    sleepHours   Float?   @map("sleep_hours")
+    sleepQuality Int?     @map("sleep_quality") // 1-5
+    energyLevel  Int?     @map("energy_level") // 1-5
+    soreness     Int? // 1-5
+    motivation   Int? // 1-5
+    hydration    Int? // 1-5
+    notes        String?
+    createdAt    DateTime @default(now()) @map("created_at")
+    updatedAt    DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+    @@unique([athleteId, date])
+    @@index([athleteId])
+    @@index([date])
+    @@map("wellness_checks")
+}
+
+// 2.9 RPESubmission model
+model RPESubmission {
+    id              String   @id @default(uuid())
+    workoutResultId String   @unique @map("workout_result_id")
+    athleteId       String   @map("athlete_id")
+    rpe             Int // Rate of Perceived Exertion (1-10)
+    submittedAt     DateTime @default(now()) @map("submitted_at")
+    notes           String?
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    workoutResult WorkoutResult @relation(fields: [workoutResultId], references: [id], onDelete: Cascade)
+    athlete       Athlete       @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+    @@map("rpe_submissions")
+}
+
+// ============================================
+// Reference Tables
+// ============================================
+
+// 2.10 TargetEvent model
+model TargetEvent {
+    id             String   @id @default(uuid())
+    name           String   @unique // e.g., "800m", "1600m", "3200m", "5K XC"
+    defaultPace    Int?     @map("default_pace") // Default pace in seconds per mile
+    distanceMeters Int      @map("distance_meters")
+    createdAt      DateTime @default(now()) @map("created_at")
+    updatedAt      DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    athleteTargetEvents AthleteTargetEvent[]
+    workouts            Workout[]
+
+    @@map("target_events")
+}
+
+// 2.11 AthleteTargetEvent model (join table)
+model AthleteTargetEvent {
+    id            String   @id @default(uuid())
+    athleteId     String   @map("athlete_id")
+    targetEventId String   @map("target_event_id")
+    goalTime      Int?     @map("goal_time") // Goal time in seconds
+    goalPace      Int?     @map("goal_pace") // Goal pace in seconds per mile
+    createdAt     DateTime @default(now()) @map("created_at")
+    updatedAt     DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    athlete     Athlete     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    targetEvent TargetEvent @relation(fields: [targetEventId], references: [id], onDelete: Cascade)
+
+    @@unique([athleteId, targetEventId])
+    @@map("athlete_target_events")
+}
+
+// 2.12 PersonalRecord model
+model PersonalRecord {
+    id        String   @id @default(uuid())
+    athleteId String   @map("athlete_id")
+    event     String // e.g., "800m", "1600m", "5K XC"
+    time      Int // Time in seconds
+    date      DateTime @db.Date
+    meet      String? // Name of the meet
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    // Relations
+    athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+    @@unique([athleteId, event])
+    @@map("personal_records")
+}
+
+// ============================================
+// Observations Table
+// ============================================
+
+// 2.13 Observation model (legacy enum types for existing observations)
+enum ObservationType {
+    pattern
+    flag
+    trend
+}
+
+enum ObservationCategory {
+    consistency
+    effort
+    wellness
+    progression
+}
+
+enum ObservationSeverity {
+    info
+    watch
+    attention
+}
+
+model Observation {
+    id        String              @id @default(uuid())
+    athleteId String              @map("athlete_id")
+    workoutId String?             @map("workout_id")
+    date      DateTime            @db.Date
+    type      ObservationType
+    category  ObservationCategory
+    message   String // Observation language only
+    severity  ObservationSeverity @default(info)
+    isRead    Boolean             @default(false) @map("is_read")
+    createdAt DateTime            @default(now()) @map("created_at")
+    updatedAt DateTime            @updatedAt @map("updated_at")
+
+    // Relations
+    athlete Athlete  @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    workout Workout? @relation(fields: [workoutId], references: [id], onDelete: SetNull)
+
+    @@index([athleteId])
+    @@index([workoutId])
+    @@index([date])
+    @@index([severity])
+    @@index([isRead])
+    @@map("observations")
+}
+
+// ============================================
+// AI Observations Engine (Phase 10)
+// ============================================
+
+// New AI Observation model for Phase 10
+enum AIObservationType {
+    athlete
+    team
+    workout
+    digest
+}
+
+enum AIObservationSeverity {
+    info
+    notice
+    warning
+    critical
+}
+
+model AIObservation {
+    id                String                @id @default(cuid())
+    type              AIObservationType
+    title             String // Short headline (under 10 words)
+    body              String // Full observation text (2-4 sentences max)
+    dataPoints        Json // Array of specific numbers/facts
+    relatedAthleteIds String[]              @map("related_athlete_ids")
+    workoutResultId   String?               @map("workout_result_id")
+    weekStart         DateTime?             @map("week_start") @db.Date // For digest type
+    severity          AIObservationSeverity @default(info)
+    viewedAt          DateTime?             @map("viewed_at")
+    dismissedAt       DateTime?             @map("dismissed_at")
+    dismissReason     String?               @map("dismiss_reason")
+    createdAt         DateTime              @default(now()) @map("created_at")
+    updatedAt         DateTime              @updatedAt @map("updated_at")
+
+    @@index([createdAt])
+    @@index([severity])
+    @@index([type])
+    @@index([viewedAt])
+    @@map("ai_observations")
+}
+
+// Coach preferences for AI Observations
+model ObservationSettings {
+    id                String   @id @default(cuid())
+    coachId           String   @unique @map("coach_id")
+    notifySeverities  String[] @default(["warning", "critical"]) @map("notify_severities")
+    quietHoursStart   Int?     @map("quiet_hours_start") // Hour of day (0-23)
+    quietHoursEnd     Int?     @map("quiet_hours_end") // Hour of day (0-23)
+    focusAthleteIds   String[] @default([]) @map("focus_athlete_ids")
+    dismissedPatterns String[] @default([]) @map("dismissed_patterns") // Pattern types to suppress
+    createdAt         DateTime @default(now()) @map("created_at")
+    updatedAt         DateTime @updatedAt @map("updated_at")
+
+    @@map("observation_settings")
+}

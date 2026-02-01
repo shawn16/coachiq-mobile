@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  coachiq-mobile-rw:
+    build: .
+    container_name: coachiq-mobile-rw
+    ports:
+      - "3001:3000"
+    volumes:
+      - .:/app
+      - ~/.gitconfig:/root/.gitconfig:ro
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    working_dir: /app
