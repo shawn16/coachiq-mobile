@@ -72,7 +72,7 @@ This plan implements the remaining spec files for the mobile backend API:
 
 ## Phase 2: Shared Utilities
 
-### Task 2.1: Create wellness input validation utility
+### Task 2.1: Create wellness input validation utility [DONE]
 - **Files:** `lib/utils/wellness-validation.ts` (new)
 - **Change:** Create a validation module exporting `validateWellnessInput(body: unknown)` that returns either a validated/typed data object or an array of field-specific error strings. Validation rules:
   - `sleepHours`: required, Float, 4.0–12.0 inclusive, must be in 0.5 increments (e.g., 4.0, 4.5, 5.0 ... 12.0)
@@ -94,7 +94,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** None
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 2.2: Create wellness alert engine
+### Task 2.2: Create wellness alert engine [DONE]
 - **Files:** `lib/utils/alert-engine.ts` (new)
 - **Change:** Create a **pure function** (per AGENTS.md: "The alert engine should be a pure function importable by the wellness submission endpoint") that evaluates wellness data and returns alert results. Export:
   - `evaluateWellnessAlerts(data: WellnessData): AlertResult[]`
