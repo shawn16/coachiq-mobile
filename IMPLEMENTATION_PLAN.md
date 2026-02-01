@@ -296,7 +296,7 @@ Phase 4: Validation
 
 ## Phase 4: Validation
 
-### Task 4.1: Run Lint
+### Task 4.1: Run Lint [DONE]
 - **Files:** None (read-only)
 - **Change:** Run `pnpm lint` to verify no TypeScript or ESLint errors across all new files.
 - **Spec:** AGENTS.md validation requirement
