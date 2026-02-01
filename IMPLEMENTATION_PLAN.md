@@ -198,7 +198,7 @@ Task 1.1 (install prisma)
 - **Dependencies:** Task 2.1 (WellnessRequest model must exist in schema)
 - **Validation:** `pnpm prisma validate` exits 0
 
-### Task 3.3: Add Reverse Relations to Existing Models
+### Task 3.3: Add Reverse Relations to Existing Models [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the relation arrays to existing models so Prisma can validate bidirectional relations. These are schema-only additions (no new DB columns):
 
