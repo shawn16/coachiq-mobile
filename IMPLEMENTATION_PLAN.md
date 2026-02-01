@@ -186,7 +186,7 @@ Task 1.1 (install prisma)
 - **Dependencies:** Task 1.1
 - **Validation:** `pnpm prisma validate` exits 0
 
-### Task 3.2: Add WellnessRequest FK to WellnessCheck
+### Task 3.2: Add WellnessRequest FK to WellnessCheck [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the optional FK field and relation to WellnessCheck:
   ```
