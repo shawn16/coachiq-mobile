@@ -278,7 +278,7 @@ Task 1.1 (install prisma)
 
 Per AGENTS.md: *"If a spec says to REMOVE a field, create a new migration that drops it AFTER the replacement field exists."* The `sorenessAreas` String[] field now exists (from Phase 3), so `soreness` can be safely removed.
 
-### Task 5.1: Remove soreness Field from WellnessCheck
+### Task 5.1: Remove soreness Field from WellnessCheck [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Remove the line `soreness Int? // 1-5` from the WellnessCheck model. This is the ONLY column removal in the entire plan, and it is explicitly required by `wellness-check-expansion.md` US-004.
 - **Spec:** `wellness-check-expansion.md` US-004
