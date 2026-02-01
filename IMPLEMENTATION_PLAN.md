@@ -151,7 +151,7 @@ Phase 4: Validation
 - **Dependencies:** None
 - **Validation:** TypeScript compiles; `pnpm lint` passes
 
-### Task 2.6: Create Auth Middleware
+### Task 2.6: Create Auth Middleware [DONE]
 - **Files:** `lib/middleware/auth.ts` (create)
 - **Change:** Create an authentication middleware function that extracts and validates JWT from the `Authorization: Bearer <token>` header. Export:
   - `authenticateRequest(request: Request): { userId: string; role: "athlete" | "coach"; teamId: string }` — extracts Bearer token, verifies it via `verifyToken()`, returns decoded claims
