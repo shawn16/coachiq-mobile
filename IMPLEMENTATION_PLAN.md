@@ -110,7 +110,7 @@ Phase 4: Validation
 - **Dependencies:** Task 1.1, Task 1.3
 - **Validation:** TypeScript compiles; `pnpm lint` passes
 
-### Task 2.3: Create Supabase Server Client
+### Task 2.3: Create Supabase Server Client [DONE]
 - **Files:** `lib/supabase.ts` (create)
 - **Change:** Create a Supabase client configured for server-side use with the service/anon key. Uses env vars `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.local`. Export:
   - `supabase` — initialized Supabase client instance
