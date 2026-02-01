@@ -300,7 +300,7 @@ Per AGENTS.md: *"If a spec says to REMOVE a field, create a new migration that d
 
 ## Phase 6: Final Validation
 
-### Task 6.1: Run Lint
+### Task 6.1: Run Lint [DONE]
 - **Files:** None (read-only)
 - **Change:** Run `pnpm lint` to verify no TypeScript or ESLint errors were introduced.
 - **Spec:** AGENTS.md validation requirement
