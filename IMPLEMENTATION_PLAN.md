@@ -48,7 +48,7 @@ Task 1.1 (install prisma)
 
 ## Phase 2: New Data Models (mobile-data-models.md)
 
-### Task 2.1: Add WellnessRequest Model
+### Task 2.1: Add WellnessRequest Model [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the `WellnessRequest` model with the following fields and conventions:
   ```
@@ -76,7 +76,7 @@ Task 1.1 (install prisma)
 - **Dependencies:** Task 1.1
 - **Validation:** `pnpm prisma validate` exits 0 (will fail until reverse relations are added in Task 3.3)
 
-### Task 2.2: Add RPERequest Model
+### Task 2.2: Add RPERequest Model [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the `RPERequest` model:
   ```
