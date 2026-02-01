@@ -97,7 +97,7 @@ Phase 4: Validation
 - **Dependencies:** Task 1.1 (Prisma already installed, but dependencies must be resolved)
 - **Validation:** File imports without errors; `pnpm lint` passes on this file
 
-### Task 2.2: Create JWT Utility
+### Task 2.2: Create JWT Utility [DONE]
 - **Files:** `lib/utils/jwt.ts` (create)
 - **Change:** Create JWT sign and verify utility functions. Export:
   - `signAthleteToken(athleteId: string, teamId: string): string` — signs JWT with `{ sub: athleteId, role: "athlete", teamId }`, 30-day expiry
