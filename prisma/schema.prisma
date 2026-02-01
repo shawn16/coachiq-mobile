@@ -260,19 +260,23 @@ model Split {
 
 // 2.8 WellnessCheck model
 model WellnessCheck {
-    id           String   @id @default(uuid())
-    athleteId    String   @map("athlete_id")
-    date         DateTime @db.Date
-    submittedAt  DateTime @default(now()) @map("submitted_at")
-    sleepHours   Float?   @map("sleep_hours")
-    sleepQuality Int?     @map("sleep_quality") // 1-5
-    energyLevel  Int?     @map("energy_level") // 1-5
-    soreness     Int? // 1-5
-    motivation   Int? // 1-5
-    hydration    Int? // 1-5
-    notes        String?
-    createdAt    DateTime @default(now()) @map("created_at")
-    updatedAt    DateTime @updatedAt @map("updated_at")
+    id              String   @id @default(uuid())
+    athleteId       String   @map("athlete_id")
+    date            DateTime @db.Date
+    submittedAt     DateTime @default(now()) @map("submitted_at")
+    sleepHours      Float?   @map("sleep_hours")
+    sleepQuality    Int?     @map("sleep_quality") // 1-10
+    energyLevel     Int?     @map("energy_level") // 1-10
+    soreness        Int? // 1-5
+    motivation      Int? // 1-10
+    hydration       Int? // 1-10
+    focus           Int? // 1-10
+    foodTiming      String?  @map("food_timing") // "havent_eaten", "just_ate", "1_2_hours", "3_plus_hours"
+    sorenessAreas   String[] @default([]) @map("soreness_areas") // Body areas from allowed set
+    illnessSymptoms String[] @default([]) @map("illness_symptoms") // Symptoms from allowed set
+    notes           String?
+    createdAt       DateTime @default(now()) @map("created_at")
+    updatedAt       DateTime @updatedAt @map("updated_at")
 
     // Relations
     athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
