@@ -60,7 +60,7 @@ Phase 4: Validation
 - **Dependencies:** None
 - **Validation:** `pnpm install` completes; package appears in `package.json`
 
-### Task 1.2: Install Supabase Client
+### Task 1.2: Install Supabase Client [DONE]
 - **Files:** `package.json`
 - **Change:** Install `@supabase/supabase-js` for verifying coach credentials against the existing Supabase Auth system:
   - `pnpm add @supabase/supabase-js`
