@@ -106,7 +106,7 @@ Task 1.1 (install prisma)
 - **Dependencies:** Task 1.1
 - **Validation:** `pnpm prisma validate` (after Task 3.3 adds reverse relations)
 
-### Task 2.3: Add DeviceToken Model
+### Task 2.3: Add DeviceToken Model [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the `DeviceToken` model. Note: `userId` is a plain String (not a FK) because it can reference either an Athlete or Coach.
   ```
