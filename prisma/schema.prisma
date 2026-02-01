@@ -349,6 +349,22 @@ model RPERequest {
     @@map("rpe_requests")
 }
 
+// DeviceToken - Expo push notification token storage
+model DeviceToken {
+    id        String   @id @default(uuid())
+    userId    String   @map("user_id")
+    userRole  String   @map("user_role") // "athlete" or "coach"
+    token     String   @unique
+    isActive  Boolean  @default(true) @map("is_active")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@unique([userId, token])
+    @@index([userId])
+    @@index([isActive])
+    @@map("device_tokens")
+}
+
 // ============================================
 // Reference Tables
 // ============================================
