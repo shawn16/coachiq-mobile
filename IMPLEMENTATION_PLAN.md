@@ -134,7 +134,7 @@ Phase 4: Validation
 - **Dependencies:** None
 - **Validation:** TypeScript compiles; `pnpm lint` passes
 
-### Task 2.5: Create In-Memory Rate Limiter
+### Task 2.5: Create In-Memory Rate Limiter [DONE]
 - **Files:** `lib/utils/rate-limit.ts` (create)
 - **Change:** Create a simple in-memory rate limiter for PIN brute-force protection. Export:
   - `RateLimiter` class or `checkRateLimit(key: string, maxAttempts: number, windowMs: number): { allowed: boolean; remaining: number }` function
