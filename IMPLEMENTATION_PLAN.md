@@ -307,7 +307,7 @@ Per AGENTS.md: *"If a spec says to REMOVE a field, create a new migration that d
 - **Dependencies:** Task 5.2
 - **Validation:** `pnpm lint` exits 0
 
-### Task 6.2: Run Build
+### Task 6.2: Run Build [DONE]
 - **Files:** None (read-only)
 - **Change:** Run `pnpm build` to verify the production build succeeds. Note: if no `build` script exists in package.json, this step passes trivially and can be skipped.
 - **Spec:** AGENTS.md validation requirement
