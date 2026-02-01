@@ -68,7 +68,7 @@ Phase 4: Validation
 - **Dependencies:** None
 - **Validation:** `pnpm install` completes; package appears in `package.json`
 
-### Task 1.3: Add JWT_SECRET Environment Variable
+### Task 1.3: Add JWT_SECRET Environment Variable [DONE]
 - **Files:** `.env.local`
 - **Change:** Add a `JWT_SECRET` variable for signing mobile JWTs. This is a server-side secret distinct from Supabase keys. Generate a strong random string (minimum 32 characters). Example:
   ```
