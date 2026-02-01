@@ -24,7 +24,9 @@ model Coach {
     updatedAt DateTime @updatedAt @map("updated_at")
 
     // Relations
-    teams Team[]
+    teams            Team[]
+    wellnessRequests WellnessRequest[]
+    rpeRequests      RPERequest[]
 
     @@map("coaches")
 }
@@ -41,10 +43,13 @@ model Team {
     updatedAt DateTime @updatedAt @map("updated_at")
 
     // Relations
-    coach    Coach     @relation(fields: [coachId], references: [id], onDelete: Cascade)
-    groups   Group[]
-    athletes Athlete[]
-    workouts Workout[]
+    coach            Coach             @relation(fields: [coachId], references: [id], onDelete: Cascade)
+    groups           Group[]
+    athletes         Athlete[]
+    workouts         Workout[]
+    wellnessRequests WellnessRequest[]
+    rpeRequests      RPERequest[]
+    wellnessAlerts   WellnessAlert[]
 
     @@index([coachId])
     @@map("teams")
@@ -62,9 +67,11 @@ model Group {
     updatedAt       DateTime @updatedAt @map("updated_at")
 
     // Relations
-    team          Team           @relation(fields: [teamId], references: [id], onDelete: Cascade)
-    athletes      Athlete[]
-    workoutGroups WorkoutGroup[]
+    team             Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    athletes         Athlete[]
+    workoutGroups    WorkoutGroup[]
+    wellnessRequests WellnessRequest[]
+    rpeRequests      RPERequest[]
 
     @@index([teamId])
     @@map("groups")
@@ -105,6 +112,7 @@ model Athlete {
     personalRecords     PersonalRecord[]
     observations        Observation[]
     baselineHistory     AthleteBaselineHistory[]
+    wellnessAlerts      WellnessAlert[]
 
     @@index([teamId])
     @@index([groupId])
@@ -180,6 +188,7 @@ model Workout {
     workoutResults WorkoutResult[]
     workoutGroups  WorkoutGroup[]
     observations   Observation[]
+    rpeRequests    RPERequest[]
 
     @@index([teamId])
     @@index([date])
@@ -282,6 +291,7 @@ model WellnessCheck {
     // Relations
     athlete         Athlete          @relation(fields: [athleteId], references: [id], onDelete: Cascade)
     wellnessRequest WellnessRequest? @relation(fields: [wellnessRequestId], references: [id], onDelete: SetNull)
+    wellnessAlerts  WellnessAlert[]
 
     @@unique([athleteId, date])
     @@index([athleteId])
