@@ -285,7 +285,7 @@ Per AGENTS.md: *"If a spec says to REMOVE a field, create a new migration that d
 - **Dependencies:** Task 4.2 (sorenessAreas must exist in DB first)
 - **Validation:** `pnpm prisma validate` exits 0
 
-### Task 5.2: Generate Client and Run Soreness Removal Migration
+### Task 5.2: Generate Client and Run Soreness Removal Migration [DONE]
 - **Files:** `prisma/migrations/` (new migration directory)
 - **Change:** Run:
   1. `pnpm prisma generate`
