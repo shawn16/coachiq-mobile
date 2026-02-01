@@ -120,7 +120,7 @@ Phase 4: Validation
 - **Dependencies:** Task 1.2
 - **Validation:** TypeScript compiles; client initializes without error
 
-### Task 2.4: Create Error Response Helper
+### Task 2.4: Create Error Response Helper [DONE]
 - **Files:** `lib/utils/errors.ts` (create)
 - **Change:** Create a utility function for consistent JSON error responses across all API endpoints. Export:
   - `errorResponse(status: number, code: string, message: string): Response` — returns a `Response` object with the standard error shape:
