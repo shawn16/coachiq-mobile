@@ -83,7 +83,7 @@ Phase 4: Validation
 
 ## Phase 2: Core Utilities
 
-### Task 2.1: Create Prisma Client Singleton
+### Task 2.1: Create Prisma Client Singleton [DONE]
 - **Files:** `lib/db.ts` (create)
 - **Change:** Create a Prisma client singleton that reuses the same instance across API route invocations to avoid exhausting database connections. Follow the standard Prisma singleton pattern:
   ```typescript
