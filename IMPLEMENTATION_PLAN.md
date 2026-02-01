@@ -262,7 +262,7 @@ Task 1.1 (install prisma)
 - **Dependencies:** Tasks 2.1–2.4, 3.1–3.3
 - **Validation:** Migration runs without error; `pnpm prisma validate` exits 0; existing `wellness_checks` records retain their data
 
-### Task 4.2: Verify Migration Success
+### Task 4.2: Verify Migration Success [DONE]
 - **Files:** None (read-only verification)
 - **Change:** Verify the migration was applied correctly:
   1. Check that `prisma/migrations/` contains the new migration directory
