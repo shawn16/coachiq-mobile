@@ -59,7 +59,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** None
 - **Validation:** `pnpm prisma validate`
 
-### Task 1.3: Run Prisma migration and generate client
+### Task 1.3: Run Prisma migration and generate client [DONE]
 - **Files:** `prisma/migrations/` (auto-generated)
 - **Change:** Run:
   1. `pnpm prisma migrate dev --name add-mobile-submission-fields`
