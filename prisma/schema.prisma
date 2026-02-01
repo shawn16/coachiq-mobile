@@ -302,6 +302,31 @@ model RPESubmission {
 }
 
 // ============================================
+// Mobile Models
+// ============================================
+
+// WellnessRequest - Coach-initiated request for athlete wellness check-ins
+model WellnessRequest {
+    id        String   @id @default(uuid())
+    teamId    String   @map("team_id")
+    groupId   String?  @map("group_id")
+    coachId   String   @map("coach_id")
+    message   String?  @db.VarChar(200)
+    deadline  DateTime
+    createdAt DateTime @default(now()) @map("created_at")
+
+    // Relations
+    team           Team            @relation(fields: [teamId], references: [id], onDelete: Cascade)
+    group          Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
+    coach          Coach           @relation(fields: [coachId], references: [id], onDelete: Cascade)
+    wellnessChecks WellnessCheck[]
+
+    @@index([teamId])
+    @@index([coachId])
+    @@map("wellness_requests")
+}
+
+// ============================================
 // Reference Tables
 // ============================================
 
