@@ -282,6 +282,8 @@ model WellnessCheck {
     foodTiming      String?  @map("food_timing") // "havent_eaten", "just_ate", "1_2_hours", "3_plus_hours"
     sorenessAreas   String[] @default([]) @map("soreness_areas") // Body areas from allowed set
     illnessSymptoms   String[] @default([]) @map("illness_symptoms") // Symptoms from allowed set
+    sorenessNotes     String?  @map("soreness_notes")
+    illnessNotes      String?  @map("illness_notes")
     wellnessRequestId String?  @map("wellness_request_id")
     notes             String?
     createdAt         DateTime @default(now()) @map("created_at")
