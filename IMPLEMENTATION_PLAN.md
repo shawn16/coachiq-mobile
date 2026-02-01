@@ -243,7 +243,7 @@ Task 1.1 (install prisma)
 
 ## Phase 4: First Migration
 
-### Task 4.1: Generate Prisma Client and Run Migration
+### Task 4.1: Generate Prisma Client and Run Migration [DONE]
 - **Files:** `prisma/migrations/` (new migration directory will be auto-created)
 - **Change:** Run the following commands:
   1. `pnpm prisma generate` — regenerate the Prisma client with all new models and fields
