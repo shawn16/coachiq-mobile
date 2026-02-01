@@ -365,6 +365,32 @@ model DeviceToken {
     @@map("device_tokens")
 }
 
+// WellnessAlert - Alert engine output records for coach review
+model WellnessAlert {
+    id              String   @id @default(uuid())
+    wellnessCheckId String   @map("wellness_check_id")
+    athleteId       String   @map("athlete_id")
+    teamId          String   @map("team_id")
+    ruleId          String   @map("rule_id")
+    severity        String // "critical", "high", "medium", "low"
+    message         String
+    details         Json
+    isResolved      Boolean  @default(false) @map("is_resolved")
+    createdAt       DateTime @default(now()) @map("created_at")
+
+    // Relations
+    wellnessCheck WellnessCheck @relation(fields: [wellnessCheckId], references: [id], onDelete: Cascade)
+    athlete       Athlete       @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    team          Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+    @@index([wellnessCheckId])
+    @@index([athleteId])
+    @@index([teamId])
+    @@index([severity])
+    @@index([isResolved])
+    @@map("wellness_alerts")
+}
+
 // ============================================
 // Reference Tables
 // ============================================

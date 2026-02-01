@@ -129,7 +129,7 @@ Task 1.1 (install prisma)
 - **Dependencies:** Task 1.1
 - **Validation:** `pnpm prisma validate` exits 0
 
-### Task 2.4: Add WellnessAlert Model
+### Task 2.4: Add WellnessAlert Model [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the `WellnessAlert` model:
   ```
