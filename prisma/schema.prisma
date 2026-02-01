@@ -273,13 +273,15 @@ model WellnessCheck {
     focus           Int? // 1-10
     foodTiming      String?  @map("food_timing") // "havent_eaten", "just_ate", "1_2_hours", "3_plus_hours"
     sorenessAreas   String[] @default([]) @map("soreness_areas") // Body areas from allowed set
-    illnessSymptoms String[] @default([]) @map("illness_symptoms") // Symptoms from allowed set
-    notes           String?
-    createdAt       DateTime @default(now()) @map("created_at")
-    updatedAt       DateTime @updatedAt @map("updated_at")
+    illnessSymptoms   String[] @default([]) @map("illness_symptoms") // Symptoms from allowed set
+    wellnessRequestId String?  @map("wellness_request_id")
+    notes             String?
+    createdAt         DateTime @default(now()) @map("created_at")
+    updatedAt         DateTime @updatedAt @map("updated_at")
 
     // Relations
-    athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    athlete         Athlete          @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+    wellnessRequest WellnessRequest? @relation(fields: [wellnessRequestId], references: [id], onDelete: SetNull)
 
     @@unique([athleteId, date])
     @@index([athleteId])
