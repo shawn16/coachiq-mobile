@@ -209,7 +209,7 @@ Phase 4: Validation
 - **Dependencies:** Task 2.1 (Prisma client), Task 2.2 (JWT signing), Task 2.4 (error responses), Task 2.5 (rate limiter)
 - **Validation:** `pnpm lint` passes; typecheck passes; manual test: POST with valid/invalid PIN returns expected responses
 
-### Task 3.2: Create Coach Login Endpoint
+### Task 3.2: Create Coach Login Endpoint [DONE]
 - **Files:** `app/api/mobile/v1/auth/coach-login+api.ts` (create)
 - **Change:** Implement `POST /api/mobile/v1/auth/coach-login` as an Expo Router API route. Export:
   ```typescript
