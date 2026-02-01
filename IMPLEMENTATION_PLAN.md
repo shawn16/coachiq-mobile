@@ -166,7 +166,7 @@ Task 1.1 (install prisma)
 
 ## Phase 3: WellnessCheck Expansion (wellness-check-expansion.md)
 
-### Task 3.1: Add New Fields to WellnessCheck Model
+### Task 3.1: Add New Fields to WellnessCheck Model [DONE]
 - **Files:** `prisma/schema.prisma`
 - **Change:** Add the following new fields to the existing `WellnessCheck` model. All new fields are nullable or default to empty array to preserve existing records:
   ```
