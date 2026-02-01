@@ -255,7 +255,7 @@ Phase 4: Validation
 - **Dependencies:** Task 2.1 (Prisma client), Task 2.2 (JWT signing), Task 2.3 (Supabase client), Task 2.4 (error responses)
 - **Validation:** `pnpm lint` passes; typecheck passes; manual test: POST with valid/invalid credentials returns expected responses
 
-### Task 3.3: Create Device Registration Endpoint
+### Task 3.3: Create Device Registration Endpoint [DONE]
 - **Files:** `app/api/mobile/v1/auth/register-device+api.ts` (create)
 - **Change:** Implement `POST /api/mobile/v1/auth/register-device` as an Expo Router API route. Export:
   ```typescript
