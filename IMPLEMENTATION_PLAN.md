@@ -169,7 +169,7 @@ Phase 4: Validation
 
 ## Phase 3: API Endpoints
 
-### Task 3.1: Create Athlete PIN Login Endpoint
+### Task 3.1: Create Athlete PIN Login Endpoint [DONE]
 - **Files:** `app/api/mobile/v1/auth/athlete-login+api.ts` (create)
 - **Change:** Implement `POST /api/mobile/v1/auth/athlete-login` as an Expo Router API route. Export:
   ```typescript
