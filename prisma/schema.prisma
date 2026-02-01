@@ -276,7 +276,6 @@ model WellnessCheck {
     sleepHours      Float?   @map("sleep_hours")
     sleepQuality    Int?     @map("sleep_quality") // 1-10
     energyLevel     Int?     @map("energy_level") // 1-10
-    soreness        Int? // 1-5
     motivation      Int? // 1-10
     hydration       Int? // 1-10
     focus           Int? // 1-10
