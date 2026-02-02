@@ -323,7 +323,7 @@ This plan implements the remaining spec files for the mobile backend API:
 
 ## Phase 5: Final Validation
 
-### Task 5.1: Run full lint and build validation
+### Task 5.1: Run full lint and build validation [DONE]
 - **Files:** None (validation only)
 - **Change:** Run `pnpm lint` and `pnpm build` across the entire project. Fix any TypeScript errors, ESLint issues, or build failures introduced by the implementation.
 - **Spec:** `AGENTS.md` (Build & Validation Commands)
