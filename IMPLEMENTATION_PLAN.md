@@ -121,7 +121,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** None
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 2.3: Create pace calculation utility
+### Task 2.3: Create pace calculation utility [DONE]
 - **Files:** `lib/utils/pace-calculations.ts` (new)
 - **Change:** Create utility functions for personalized workout target pace calculations. Export:
   - `calculatePersonalizedTargetPaces(athleteBaseline1600m: number | null, workoutStructureJson: unknown, workoutTargetPace: number | null): TargetPace[]`
@@ -139,7 +139,7 @@ This plan implements the remaining spec files for the mobile backend API:
 
 ## Phase 3: Submission Endpoints
 
-### Task 3.1: Create wellness submission endpoint
+### Task 3.1: Create wellness submission endpoint [DONE]
 - **Files:** `app/api/mobile/v1/athlete/wellness+api.ts` (new)
 - **Change:** Implement `POST /api/mobile/v1/athlete/wellness` handler:
 
