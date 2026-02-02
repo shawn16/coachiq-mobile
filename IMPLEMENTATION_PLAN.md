@@ -89,7 +89,7 @@ This plan covers all features described in the `specs/` directory for the CoachI
 - **Dependencies:** Task 2.1 (push notification service)
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 3.2: Create coach RPE request endpoint
+### Task 3.2: Create coach RPE request endpoint [DONE]
 - **Files:** `app/api/mobile/v1/coach/rpe-request+api.ts` (NEW)
 - **Change:** Implement `POST /api/mobile/v1/coach/rpe-request` following the established endpoint pattern:
   1. **Authenticate** via `authenticateRequest(request)` — verify JWT, require `role = "coach"`
