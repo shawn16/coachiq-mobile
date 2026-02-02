@@ -3,6 +3,7 @@ import { authenticateRequest, AuthError } from "@/lib/middleware/auth";
 import { errorResponse, successResponse } from "@/lib/utils/errors";
 import { validateWellnessInput } from "@/lib/utils/wellness-validation";
 import { evaluateWellnessAlerts } from "@/lib/utils/alert-engine";
+import { sendCriticalAlertNotification } from "@/lib/utils/push-notifications";
 import { Prisma } from "@prisma/client";
 
 /**
@@ -146,6 +147,39 @@ export async function POST(request: Request): Promise<Response> {
           details: alert.details as Prisma.InputJsonValue,
         })),
       });
+
+      // 9b. If any critical alerts, send push notification to the coach (fire-and-forget)
+      const criticalAlerts = alertResults.filter(
+        (a) => a.severity === "critical"
+      );
+
+      if (criticalAlerts.length > 0) {
+        // Query the created alert records to get their IDs for the push payload
+        const createdAlerts = await prisma.wellnessAlert.findMany({
+          where: {
+            wellnessCheckId: wellnessCheck.id,
+            severity: "critical",
+          },
+          select: { id: true, message: true },
+        });
+
+        // Look up the coach for this team
+        const team = await prisma.team.findUnique({
+          where: { id: teamId },
+          select: { coachId: true },
+        });
+
+        if (team?.coachId && createdAlerts.length > 0) {
+          for (const alert of createdAlerts) {
+            void sendCriticalAlertNotification({
+              coachId: team.coachId,
+              athleteName,
+              alertMessage: alert.message,
+              alertId: alert.id,
+            });
+          }
+        }
+      }
     }
 
     // 10. Return 201 with created record and alerts
