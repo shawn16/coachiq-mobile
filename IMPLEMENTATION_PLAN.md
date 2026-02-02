@@ -42,7 +42,7 @@ This plan covers all features described in the `specs/` directory for the CoachI
 
 ## Phase 2: Push Notification Service
 
-### Task 2.1: Implement push notification utility
+### Task 2.1: Implement push notification utility [DONE]
 - **Files:** `lib/utils/push-notifications.ts` (NEW)
 - **Change:** Create a push notification service utility that:
   1. **Exports `sendPushNotifications(notifications)` function** — accepts an array of Expo push notification objects and sends them via the Expo Push API (`https://exp.host/--/api/v2/push/send`)
