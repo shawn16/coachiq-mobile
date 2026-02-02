@@ -187,7 +187,7 @@ This plan covers all features described in the `specs/` directory for the CoachI
 
 ## Phase 4: Integration
 
-### Task 4.1: Wire push notifications into wellness submission for critical alerts
+### Task 4.1: Wire push notifications into wellness submission for critical alerts [DONE]
 - **Files:** `app/api/mobile/v1/athlete/wellness+api.ts`
 - **Change:** After the alert engine runs and WellnessAlert records are created, check if any alerts have `severity = "critical"`. If so, send a push notification to the coach:
   1. **Import** `sendCriticalAlertNotification` from `@/lib/utils/push-notifications`
