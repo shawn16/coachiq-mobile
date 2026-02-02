@@ -181,7 +181,7 @@ The current `lib/utils/alert-engine.ts` implementation has three categories of i
 
 ## Phase 2: Final Validation
 
-### Task 2.1: Run full lint and build validation
+### Task 2.1: Run full lint and build validation [DONE]
 - **Files:** None (validation only)
 - **Change:** Run `pnpm lint` and `pnpm build` across the entire project. Fix any TypeScript errors, ESLint issues, or build failures introduced by the changes.
 - **Spec:** `AGENTS.md` (Build & Validation Commands)
