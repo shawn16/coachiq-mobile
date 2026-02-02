@@ -153,7 +153,7 @@ The current `lib/utils/alert-engine.ts` implementation has three categories of i
 - **Dependencies:** None
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 1.2: Update wellness endpoint to pass new alert engine parameters
+### Task 1.2: Update wellness endpoint to pass new alert engine parameters [DONE]
 - **Files:** `app/api/mobile/v1/athlete/wellness+api.ts`
 - **Change:** Update the alert engine integration to pass the three new parameters:
   1. **Query athlete name:** Before calling the alert engine, fetch the athlete's `firstName` and `lastName` from the database (extend the existing athlete lookup or add one)
