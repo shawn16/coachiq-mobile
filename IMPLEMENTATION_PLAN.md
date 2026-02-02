@@ -111,7 +111,7 @@ This plan covers all features described in the `specs/` directory for the CoachI
 - **Dependencies:** Task 2.1 (push notification service)
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 3.3: Create coach dashboard endpoint
+### Task 3.3: Create coach dashboard endpoint [DONE]
 - **Files:** `app/api/mobile/v1/coach/dashboard+api.ts` (NEW)
 - **Change:** Implement `GET /api/mobile/v1/coach/dashboard`:
   1. **Authenticate** — verify JWT, require `role = "coach"`
