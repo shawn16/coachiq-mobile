@@ -106,16 +106,22 @@ export async function POST(request: Request): Promise<Response> {
     }
 
     // 7. Run alert engine against submission data
-    const alertResults = evaluateWellnessAlerts({
-      sleepHours: data.sleepHours,
-      sleepQuality: data.sleepQuality,
-      hydration: data.hydration,
-      energy: data.energy,
-      motivation: data.motivation,
-      focus: data.focus,
-      sorenessAreas: data.sorenessAreas,
-      illnessSymptoms: data.illnessSymptoms,
-    });
+    // TODO(Task 1.2): Query athlete name and prior submission count from DB
+    const alertResults = evaluateWellnessAlerts(
+      {
+        sleepHours: data.sleepHours,
+        sleepQuality: data.sleepQuality,
+        hydration: data.hydration,
+        energy: data.energy,
+        motivation: data.motivation,
+        focus: data.focus,
+        foodTiming: data.foodTiming,
+        sorenessAreas: data.sorenessAreas,
+        illnessSymptoms: data.illnessSymptoms,
+      },
+      "Athlete",
+      1
+    );
 
     // 8. If alerts triggered, batch-create WellnessAlert records
     if (alertResults.length > 0) {
