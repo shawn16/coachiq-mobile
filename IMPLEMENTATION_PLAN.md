@@ -136,7 +136,7 @@ This plan covers all features described in the `specs/` directory for the CoachI
 - **Dependencies:** Task 1.1 (composite index, optional but recommended)
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 3.4: Create coach alerts endpoint
+### Task 3.4: Create coach alerts endpoint [DONE]
 - **Files:** `app/api/mobile/v1/coach/alerts+api.ts` (NEW)
 - **Change:** Implement `GET /api/mobile/v1/coach/alerts`:
   1. **Authenticate** — verify JWT, require `role = "coach"`
