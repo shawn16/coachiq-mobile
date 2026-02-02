@@ -28,7 +28,7 @@ There is no mobile API endpoint for athletes to discover pending requests. When 
 - Request deadline has not passed
 - Athlete has NOT submitted an RPE for the specified workout
 
-### Group Filtering
+### Group Filtering Feature
 
 - If request has groupId = null → targets ALL athletes on the team
 - If request has groupId = "group-123" → targets only athletes in that group
