@@ -206,7 +206,7 @@ This plan implements the remaining spec files for the mobile backend API:
 
 ## Phase 4: Read Endpoints
 
-### Task 4.1: Create pending requests endpoint
+### Task 4.1: Create pending requests endpoint [DONE]
 - **Files:** `app/api/mobile/v1/athlete/pending+api.ts` (new)
 - **Change:** Implement `GET /api/mobile/v1/athlete/pending` handler:
 
