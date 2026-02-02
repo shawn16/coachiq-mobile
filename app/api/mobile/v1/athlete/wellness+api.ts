@@ -63,7 +63,18 @@ export async function POST(request: Request): Promise<Response> {
       }
     }
 
-    // 5. Create WellnessCheck record
+    // 5. Query athlete name and prior submission count for alert engine
+    const [athlete, priorSubmissionCount] = await Promise.all([
+      prisma.athlete.findUniqueOrThrow({
+        where: { id: athleteId },
+        select: { firstName: true, lastName: true },
+      }),
+      prisma.wellnessCheck.count({ where: { athleteId } }),
+    ]);
+
+    const athleteName = `${athlete.firstName} ${athlete.lastName}`;
+
+    // 6. Create WellnessCheck record
     //    - date is today (Date only) for the unique constraint
     //    - Map "energy" input field to "energyLevel" DB column
     const today = new Date();
@@ -91,7 +102,7 @@ export async function POST(request: Request): Promise<Response> {
         },
       });
     } catch (err) {
-      // 6. Catch unique constraint violation on [athleteId, date]
+      // 7. Catch unique constraint violation on [athleteId, date]
       if (
         err instanceof Prisma.PrismaClientKnownRequestError &&
         err.code === "P2002"
@@ -105,8 +116,7 @@ export async function POST(request: Request): Promise<Response> {
       throw err;
     }
 
-    // 7. Run alert engine against submission data
-    // TODO(Task 1.2): Query athlete name and prior submission count from DB
+    // 8. Run alert engine against submission data
     const alertResults = evaluateWellnessAlerts(
       {
         sleepHours: data.sleepHours,
@@ -119,11 +129,11 @@ export async function POST(request: Request): Promise<Response> {
         sorenessAreas: data.sorenessAreas,
         illnessSymptoms: data.illnessSymptoms,
       },
-      "Athlete",
-      1
+      athleteName,
+      priorSubmissionCount
     );
 
-    // 8. If alerts triggered, batch-create WellnessAlert records
+    // 9. If alerts triggered, batch-create WellnessAlert records
     if (alertResults.length > 0) {
       await prisma.wellnessAlert.createMany({
         data: alertResults.map((alert) => ({
@@ -138,7 +148,7 @@ export async function POST(request: Request): Promise<Response> {
       });
     }
 
-    // 9. Return 201 with created record and alerts
+    // 10. Return 201 with created record and alerts
     return successResponse(
       {
         wellnessCheck,
