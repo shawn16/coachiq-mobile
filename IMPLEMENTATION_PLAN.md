@@ -170,7 +170,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** Task 1.3 (schema migration), Task 2.1 (validation), Task 2.2 (alert engine)
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 3.2: Create RPE submission endpoint
+### Task 3.2: Create RPE submission endpoint [DONE]
 - **Files:** `app/api/mobile/v1/athlete/rpe+api.ts` (new)
 - **Change:** Implement `POST /api/mobile/v1/athlete/rpe` handler:
 
