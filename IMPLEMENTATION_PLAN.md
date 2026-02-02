@@ -67,7 +67,7 @@ This plan covers all features described in the `specs/` directory for the CoachI
 
 ## Phase 3: Coach API Endpoints
 
-### Task 3.1: Create coach wellness request endpoint
+### Task 3.1: Create coach wellness request endpoint [DONE]
 - **Files:** `app/api/mobile/v1/coach/wellness-request+api.ts` (NEW)
 - **Change:** Implement `POST /api/mobile/v1/coach/wellness-request` following the established endpoint pattern:
   1. **Authenticate** via `authenticateRequest(request)` — verify JWT, require `role = "coach"`
