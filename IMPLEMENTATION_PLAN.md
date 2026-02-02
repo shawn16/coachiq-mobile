@@ -277,7 +277,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** Task 2.3 (pace calculations)
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 4.3: Create athlete stats endpoint
+### Task 4.3: Create athlete stats endpoint [DONE]
 - **Files:** `app/api/mobile/v1/athlete/stats+api.ts` (new)
 - **Change:** Implement `GET /api/mobile/v1/athlete/stats` handler:
 
