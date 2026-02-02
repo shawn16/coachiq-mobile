@@ -408,6 +408,7 @@ model WellnessAlert {
     @@index([teamId])
     @@index([severity])
     @@index([isResolved])
+    @@index([teamId, isResolved, severity])
     @@map("wellness_alerts")
 }
 
