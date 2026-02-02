@@ -242,7 +242,7 @@ This plan implements the remaining spec files for the mobile backend API:
 - **Dependencies:** Task 1.3 (schema)
 - **Validation:** `pnpm lint && pnpm build`
 
-### Task 4.2: Create athlete workouts endpoint
+### Task 4.2: Create athlete workouts endpoint [DONE]
 - **Files:** `app/api/mobile/v1/athlete/workouts+api.ts` (new)
 - **Change:** Implement `GET /api/mobile/v1/athlete/workouts` handler:
 
