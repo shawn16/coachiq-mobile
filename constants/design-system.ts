@@ -64,6 +64,16 @@ export const DS_COLORS = {
     valueText: '#4A7CF7',
   },
 
+  rpeScale: {
+    green: '#22C55E',
+    yellow: '#EAB308',
+    orange: '#F97316',
+    red: '#EF4444',
+    unselectedBg: '#F3F4F6',
+    unselectedText: '#687076',
+    selectedText: '#FFFFFF',
+  },
+
   input: {
     border: '#E5E7EB',
     borderFocused: '#4A7CF7',
@@ -329,6 +339,13 @@ export const DS_COMPONENTS = {
     circleSize: 50,
     gap: DS_SPACING.sm,
     values: [2, 4, 6, 8, 10] as const,
+  },
+
+  rpeScale: {
+    buttonHeight: 44,
+    borderRadius: DS_RADIUS.sm,
+    gap: DS_SPACING.xs,
+    selectedScale: 1.15,
   },
 
   sleepSlider: {

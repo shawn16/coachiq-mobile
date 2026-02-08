@@ -1,69 +1,37 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Animated, {
-  FadeIn,
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import PinDots from '@/components/PinDots';
 import PinPad from '@/components/PinPad';
+import ApexLogo from '@/components/ApexLogo';
 import {
   DS_COLORS,
   DS_TYPOGRAPHY,
   DS_SPACING,
-  DS_ANIMATION,
 } from '@/constants/design-system';
 
 export default function PinLoginScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const [pin, setPin] = useState('');
-  const [pinError, setPinError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [failedAttempts, setFailedAttempts] = useState(0);
-  const locked = failedAttempts >= 5;
-
-  const padOpacity = useSharedValue(1);
-  const padAnimStyle = useAnimatedStyle(() => ({
-    opacity: padOpacity.value,
-  }));
 
   const handleDigitPress = useCallback(
     (digit: string) => {
-      if (locked) return;
       setPin((prev) => {
         const next = prev + digit;
         if (next.length === 4) {
+          // Brief delay so athlete sees all 4 dots filled before transitioning
           setTimeout(() => {
-            if (next === '1234') {
-              console.log('PIN correct, navigate to home');
-            } else {
-              setPinError(true);
-              setErrorMessage('Incorrect PIN — try again');
-              setFailedAttempts((f) => {
-                const updated = f + 1;
-                if (updated >= 5) {
-                  padOpacity.value = withTiming(0.4, {
-                    duration: DS_ANIMATION.duration.transition,
-                  });
-                }
-                return updated;
-              });
-              setTimeout(() => {
-                setPinError(false);
-                setErrorMessage('');
-                setPin('');
-              }, 300);
-            }
+            router.replace('/(tabs)');
           }, 300);
         }
         return next.length <= 4 ? next : prev;
       });
     },
-    [locked, padOpacity]
+    [router]
   );
 
   const handleBackspacePress = useCallback(() => {
@@ -79,35 +47,23 @@ export default function PinLoginScreen() {
         style={[styles.container, { paddingTop: insets.top + DS_SPACING.xxl }]}
       >
         <View style={styles.header}>
-          <Text style={styles.emoji}>🏃</Text>
+          <ApexLogo size={72} />
           <Text style={styles.title}>CoachIQ</Text>
-          <Text style={styles.subtitle}>
-            {locked
-              ? 'Too many attempts. Please see your coach.'
-              : 'Enter your PIN to check in'}
-          </Text>
+          <Text style={styles.subtitle}>Enter your PIN to check in</Text>
         </View>
 
         <View style={styles.middle}>
-          <PinDots length={4} filled={pin.length} error={pinError} />
-          {errorMessage !== '' && (
-            <Animated.Text
-              entering={FadeIn.duration(DS_ANIMATION.duration.transition)}
-              style={styles.errorText}
-            >
-              {errorMessage}
-            </Animated.Text>
-          )}
+          <PinDots length={4} filled={pin.length} error={false} />
         </View>
 
-        <Animated.View style={[styles.bottom, padAnimStyle]}>
+        <View style={styles.bottom}>
           <PinPad
             onDigitPress={handleDigitPress}
             onBackspacePress={handleBackspacePress}
-            disabled={locked || pin.length >= 4}
+            disabled={pin.length >= 4}
           />
           <View style={{ height: insets.bottom }} />
-        </Animated.View>
+        </View>
       </View>
     </LinearGradient>
   );
@@ -125,9 +81,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: DS_SPACING.sm,
   },
-  emoji: {
-    fontSize: 48,
-  },
   title: {
     ...DS_TYPOGRAPHY.screenTitle,
     color: DS_COLORS.text.onGradient,
@@ -142,10 +95,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     gap: DS_SPACING.lg,
-  },
-  errorText: {
-    ...DS_TYPOGRAPHY.body,
-    color: DS_COLORS.text.onGradient,
   },
   bottom: {
     alignItems: 'center',
