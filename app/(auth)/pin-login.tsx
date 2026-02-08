@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -12,20 +13,31 @@ import {
   DS_SPACING,
 } from '@/constants/design-system';
 
+const MOCK_PIN = '1234';
+
 export default function PinLoginScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
   const [pin, setPin] = useState('');
+  const [error, setError] = useState(false);
 
   const handleDigitPress = useCallback(
     (digit: string) => {
       setPin((prev) => {
         const next = prev + digit;
         if (next.length === 4) {
-          // Brief delay so athlete sees all 4 dots filled before transitioning
           setTimeout(() => {
-            router.replace('/(tabs)');
+            if (next === MOCK_PIN) {
+              router.replace('/(tabs)');
+            } else {
+              setError(true);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              setTimeout(() => {
+                setError(false);
+                setPin('');
+              }, 1000);
+            }
           }, 300);
         }
         return next.length <= 4 ? next : prev;
@@ -53,7 +65,7 @@ export default function PinLoginScreen() {
         </View>
 
         <View style={styles.middle}>
-          <PinDots length={4} filled={pin.length} error={false} />
+          <PinDots length={4} filled={pin.length} error={error} />
         </View>
 
         <View style={styles.bottom}>
@@ -88,7 +100,7 @@ const styles = StyleSheet.create({
   subtitle: {
     ...DS_TYPOGRAPHY.body,
     color: DS_COLORS.text.onGradient,
-    opacity: 0.8,
+    opacity: 0.75,
   },
   middle: {
     flex: 1,

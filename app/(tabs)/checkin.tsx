@@ -1,89 +1,100 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Animated } from 'react-native';
+import { ScrollView, StyleSheet, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {
   DS_COLORS,
-  DS_TYPOGRAPHY,
   DS_SPACING,
-  DS_RADIUS,
-  DS_COMPONENTS,
   DS_ANIMATION,
 } from '@/constants/design-system';
 import { useCheckIn } from '@/contexts/CheckInContext';
+import { mockTodaysWorkout } from '@/mocks/dashboard';
+import CheckInHeader from '@/components/checkin/CheckInHeader';
+import WellnessCheckInCard from '@/components/checkin/WellnessCheckInCard';
+import RPECard from '@/components/checkin/RPECard';
+import StatusSummaryCard from '@/components/checkin/StatusSummaryCard';
 
-function formatDate(): string {
-  const now = new Date();
-  return now.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+function FadeInCard({ index, children }: { index: number; children: React.ReactNode }) {
+  const opacity = React.useRef(new Animated.Value(0)).current;
+  const translateY = React.useRef(new Animated.Value(16)).current;
+
+  React.useEffect(() => {
+    const delay = index * 100;
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: DS_ANIMATION.duration.transition,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: DS_ANIMATION.duration.transition,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- refs are stable; runs once on mount
+  }, [index]);
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      {children}
+    </Animated.View>
+  );
 }
 
 export default function CheckInScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isWellnessComplete } = useCheckIn();
-  const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  const {
+    isWellnessComplete,
+    isRPEComplete,
+    isRPEAvailable,
+    cycleDevState,
+  } = useCheckIn();
 
-  const onPressIn = () => {
-    Animated.timing(scaleAnim, {
-      toValue: DS_ANIMATION.pressedScale,
-      duration: DS_ANIMATION.duration.press,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const onPressOut = () => {
-    Animated.timing(scaleAnim, {
-      toValue: 1,
-      duration: DS_ANIMATION.duration.press,
-      useNativeDriver: true,
-    }).start();
-  };
+  const rpeStatus: 'complete' | 'pending' | 'waiting' = isRPEComplete
+    ? 'complete'
+    : isRPEAvailable
+      ? 'pending'
+      : 'waiting';
 
   return (
     <LinearGradient
       colors={[...DS_COLORS.gradient.stops]}
-      style={styles.gradient}
+      style={[styles.gradient, { paddingTop: insets.top + DS_SPACING.xxl }]}
     >
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        {isWellnessComplete ? (
-          /* ─── Completed state ─── */
-          <>
-            <View style={styles.iconCircle}>
-              <MaterialIcons name="check" size={48} color={DS_COLORS.text.onGradient} />
-            </View>
-            <Text style={styles.title}>Check-in Complete</Text>
-            <Text style={styles.date}>{formatDate()}</Text>
-            <Text style={styles.subtitle}>Already submitted today</Text>
-          </>
-        ) : (
-          /* ─── Not complete state ─── */
-          <>
-            <Text style={styles.emoji}>{'📋'}</Text>
-            <Text style={styles.title}>Ready to Check In?</Text>
-            <Text style={styles.subtitle}>
-              Tell your coach how you{"'"}re feeling before practice
-            </Text>
-            <Pressable
-              onPress={() => router.push('/wellness-checkin')}
-              onPressIn={onPressIn}
-              onPressOut={onPressOut}
-            >
-              <Animated.View
-                style={[styles.button, { transform: [{ scale: scaleAnim }] }]}
-              >
-                <Text style={styles.buttonText}>Start Check-in</Text>
-              </Animated.View>
-            </Pressable>
-          </>
-        )}
-      </View>
+      <CheckInHeader onTitleLongPress={cycleDevState} />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: insets.bottom + DS_SPACING.massive },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
+        <FadeInCard index={0}>
+          <WellnessCheckInCard
+            isComplete={isWellnessComplete}
+            onStartPress={() => router.push('/wellness-checkin')}
+          />
+        </FadeInCard>
+        <FadeInCard index={1}>
+          <RPECard
+            status={rpeStatus}
+            workoutName={`${mockTodaysWorkout.structure}`}
+            onStartPress={() => router.push('/rpe-submission')}
+          />
+        </FadeInCard>
+        <FadeInCard index={2}>
+          <StatusSummaryCard
+            wellnessComplete={isWellnessComplete}
+            rpeComplete={isRPEComplete}
+          />
+        </FadeInCard>
+      </ScrollView>
     </LinearGradient>
   );
 }
@@ -92,55 +103,12 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
-  container: {
+  scrollView: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  scrollContent: {
     paddingHorizontal: DS_SPACING.xl,
-  },
-  iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: DS_RADIUS.full,
-    backgroundColor: DS_COLORS.accent.green,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: DS_SPACING.xl,
-  },
-  emoji: {
-    fontSize: 56,
-    marginBottom: DS_SPACING.xl,
-  },
-  title: {
-    ...DS_TYPOGRAPHY.screenTitle,
-    color: DS_COLORS.text.onGradient,
-    textAlign: 'center',
-  },
-  date: {
-    ...DS_TYPOGRAPHY.body,
-    color: DS_COLORS.text.onGradient,
-    opacity: 0.75,
-    marginTop: DS_SPACING.sm,
-    textAlign: 'center',
-  },
-  subtitle: {
-    ...DS_TYPOGRAPHY.body,
-    color: DS_COLORS.text.onGradient,
-    opacity: 0.7,
-    marginTop: DS_SPACING.sm,
-    textAlign: 'center',
-  },
-  button: {
-    height: DS_COMPONENTS.submitButton.height,
-    paddingHorizontal: DS_SPACING.massive,
-    backgroundColor: DS_COLORS.text.onGradient,
-    borderRadius: DS_COMPONENTS.submitButton.borderRadius,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: DS_SPACING.xxl,
-  },
-  buttonText: {
-    ...DS_TYPOGRAPHY.buttonLabel,
-    color: DS_COLORS.gradient.deepPurple,
+    paddingTop: DS_SPACING.xl,
+    gap: DS_SPACING.lg,
   },
 });

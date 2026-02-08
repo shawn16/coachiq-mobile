@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     color: DS_COLORS.text.onGradient,
     opacity: 0.75,
     paddingHorizontal: DS_SPACING.xl,
+    marginTop: DS_SPACING.xs,
   },
   scrollView: {
     flex: 1,

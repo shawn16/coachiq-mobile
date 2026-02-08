@@ -9,6 +9,8 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import Animated, {
   SlideInRight,
   SlideOutLeft,
@@ -31,6 +33,7 @@ import {
 
 export default function SetupScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState<0 | 1 | 2>(0);
   const [inviteCode, setInviteCode] = useState('');
@@ -69,7 +72,8 @@ export default function SetupScreen() {
           if (next.length === 4) {
             setTimeout(() => {
               if (next === pin) {
-                console.log('PIN set, navigate to home');
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                router.replace('/(tabs)');
               } else {
                 setPinError(true);
                 setErrorMessage("PINs didn't match — try again");
@@ -87,7 +91,7 @@ export default function SetupScreen() {
         });
       }
     },
-    [currentStep, pin]
+    [currentStep, pin, router]
   );
 
   const handleBackspace = useCallback(() => {
@@ -275,7 +279,7 @@ const styles = StyleSheet.create({
   subtitle: {
     ...DS_TYPOGRAPHY.body,
     color: DS_COLORS.text.onGradient,
-    opacity: 0.8,
+    opacity: 0.75,
   },
   errorText: {
     ...DS_TYPOGRAPHY.body,
