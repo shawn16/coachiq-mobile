@@ -28,8 +28,12 @@ export async function clearStoredToken(): Promise<void> {
 
 async function handle401() {
   await clearStoredToken();
-  await AsyncStorage.removeItem("coachiq_athlete_profile");
-  router.replace("/(auth)");
+  await AsyncStorage.multiRemove([
+    "coachiq_athlete_profile",
+    "coachiq_coach_profile",
+    "coachiq_user_role",
+  ]);
+  router.replace("/");
 }
 
 interface RequestOptions {
