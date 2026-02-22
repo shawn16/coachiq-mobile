@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -16,8 +17,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import ApexLogo from '@/components/ApexLogo';
+import GoogleIcon from '@/components/GoogleIcon';
 import { useAuth } from '@/contexts/AuthContext';
 import { coachLogin } from '@/services/coach';
+import { useGoogleAuth, googleLogin } from '@/services/google-auth';
 import {
   DS_COLORS,
   DS_TYPOGRAPHY,
@@ -39,14 +42,64 @@ export default function CoachLoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [setupRequired, setSetupRequired] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const { request, response, promptAsync } = useGoogleAuth();
 
   const isValid = isValidEmail(email) && password.length > 0;
+
+  // Handle Google auth response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const idToken = response.authentication?.idToken;
+      if (idToken) {
+        handleGoogleSignIn(idToken);
+      } else {
+        setError('Failed to get Google credentials. Please try again.');
+        setIsGoogleLoading(false);
+      }
+    } else if (response?.type === 'error') {
+      setError('Google sign-in was cancelled or failed.');
+      setIsGoogleLoading(false);
+    } else if (response?.type === 'dismiss') {
+      setIsGoogleLoading(false);
+    }
+  }, [response]);
+
+  const handleGoogleSignIn = async (idToken: string) => {
+    setIsGoogleLoading(true);
+    setError('');
+    setSetupRequired(false);
+
+    try {
+      const result = await googleLogin(idToken);
+
+      if (result.success && result.data) {
+        await auth.loginAsCoach(result.data.token, result.data.coach);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        router.replace('/(coach)');
+      } else if (result.code === 'SETUP_REQUIRED') {
+        setSetupRequired(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        setError(result.error || 'Google sign-in failed.');
+      }
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setError('Unable to connect. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleSignIn = async () => {
     if (!isValid || isSubmitting) return;
 
     setError('');
+    setSetupRequired(false);
     setIsSubmitting(true);
 
     try {
@@ -96,6 +149,35 @@ export default function CoachLoginScreen() {
           </View>
 
           <View style={styles.card}>
+            {/* Google Sign-In Button */}
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={() => {
+                setIsGoogleLoading(true);
+                setError('');
+                setSetupRequired(false);
+                promptAsync();
+              }}
+              disabled={!request || isGoogleLoading || isSubmitting}
+              activeOpacity={0.8}
+            >
+              {isGoogleLoading ? (
+                <ActivityIndicator color={DS_COLORS.text.primary} />
+              ) : (
+                <View style={styles.googleButtonContent}>
+                  <GoogleIcon size={20} />
+                  <Text style={styles.googleButtonText}>Sign in with Google</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+
+            {/* Divider */}
+            <View style={styles.dividerContainer}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or continue with email</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Email</Text>
               <TextInput
@@ -108,7 +190,7 @@ export default function CoachLoginScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 autoComplete="email"
-                editable={!isSubmitting}
+                editable={!isSubmitting && !isGoogleLoading}
               />
             </View>
 
@@ -125,7 +207,7 @@ export default function CoachLoginScreen() {
                   autoCapitalize="none"
                   autoCorrect={false}
                   autoComplete="password"
-                  editable={!isSubmitting}
+                  editable={!isSubmitting && !isGoogleLoading}
                   onSubmitEditing={handleSignIn}
                   returnKeyType="go"
                 />
@@ -145,13 +227,30 @@ export default function CoachLoginScreen() {
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+            {setupRequired ? (
+              <View style={styles.setupCard}>
+                <Text style={styles.setupTitle}>Welcome to CoachIQ!</Text>
+                <Text style={styles.setupMessage}>
+                  Set up your team on the web to get started.
+                </Text>
+                <TouchableOpacity
+                  style={styles.setupLink}
+                  onPress={() => Linking.openURL('https://v0-coach-iq-app-build.vercel.app')}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.setupLinkText}>Open coachiq.com</Text>
+                  <Ionicons name="open-outline" size={16} color={DS_COLORS.accent.green} />
+                </TouchableOpacity>
+              </View>
+            ) : null}
+
             <TouchableOpacity
               style={[
                 styles.signInButton,
                 !isValid && styles.signInButtonDisabled,
               ]}
               onPress={handleSignIn}
-              disabled={!isValid || isSubmitting}
+              disabled={!isValid || isSubmitting || isGoogleLoading}
               activeOpacity={0.8}
             >
               {isSubmitting ? (
@@ -204,6 +303,41 @@ const styles = StyleSheet.create({
     padding: DS_SPACING.xxl,
     ...DS_SHADOWS.elevated,
   },
+  googleButton: {
+    backgroundColor: DS_COLORS.surface.card,
+    borderRadius: DS_RADIUS.md,
+    borderWidth: 1,
+    borderColor: DS_COLORS.input.border,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: DS_SPACING.lg,
+  },
+  googleButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  googleButtonText: {
+    ...DS_TYPOGRAPHY.buttonLabel,
+    color: DS_COLORS.text.primary,
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: DS_SPACING.lg,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: DS_COLORS.input.border,
+  },
+  dividerText: {
+    ...DS_TYPOGRAPHY.caption,
+    color: DS_COLORS.text.secondary,
+    paddingHorizontal: DS_SPACING.md,
+    textTransform: 'uppercase',
+  },
   inputGroup: {
     marginBottom: DS_SPACING.xl,
   },
@@ -239,6 +373,35 @@ const styles = StyleSheet.create({
     ...DS_TYPOGRAPHY.caption,
     color: DS_COLORS.status.error,
     marginBottom: DS_SPACING.lg,
+  },
+  setupCard: {
+    backgroundColor: '#F0FDF4',
+    borderRadius: DS_RADIUS.md,
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    padding: DS_SPACING.lg,
+    marginBottom: DS_SPACING.lg,
+    alignItems: 'center',
+  },
+  setupTitle: {
+    ...DS_TYPOGRAPHY.captionMedium,
+    color: DS_COLORS.text.primary,
+    marginBottom: DS_SPACING.xs,
+  },
+  setupMessage: {
+    ...DS_TYPOGRAPHY.caption,
+    color: DS_COLORS.text.secondary,
+    textAlign: 'center',
+    marginBottom: DS_SPACING.md,
+  },
+  setupLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  setupLinkText: {
+    ...DS_TYPOGRAPHY.captionMedium,
+    color: DS_COLORS.accent.green,
   },
   signInButton: {
     backgroundColor: DS_COLORS.accent.green,
