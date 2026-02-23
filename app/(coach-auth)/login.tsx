@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import ApexLogo from '@/components/ApexLogo';
 import GoogleIcon from '@/components/GoogleIcon';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { useAuth } from '@/contexts/AuthContext';
 import { coachLogin } from '@/services/coach';
 import { useGoogleAuth, googleLogin } from '@/services/google-auth';
@@ -33,6 +34,72 @@ function isValidEmail(email: string): boolean {
   return email.includes('@') && email.includes('.');
 }
 
+/**
+ * Isolated Google Sign-In button — wrapped in its own ErrorBoundary so that
+ * if expo-auth-session crashes in production, the rest of the login form
+ * still renders and email/password login keeps working.
+ */
+function GoogleSignInSection({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (idToken: string) => void;
+  onError: (msg: string) => void;
+}) {
+  const { request, response, promptAsync } = useGoogleAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const idToken = response.authentication?.idToken;
+      if (idToken) {
+        onSuccess(idToken);
+      } else {
+        onError('Failed to get Google credentials. Please try again.');
+        setIsLoading(false);
+      }
+    } else if (response?.type === 'error') {
+      onError('Google sign-in was cancelled or failed.');
+      setIsLoading(false);
+    } else if (response?.type === 'dismiss') {
+      setIsLoading(false);
+    }
+  }, [response]);
+
+  return (
+    <TouchableOpacity
+      style={styles.googleButton}
+      onPress={() => {
+        setIsLoading(true);
+        onError('');
+        promptAsync();
+      }}
+      disabled={!request || isLoading}
+      activeOpacity={0.8}
+    >
+      {isLoading ? (
+        <ActivityIndicator color={DS_COLORS.text.primary} />
+      ) : (
+        <View style={styles.googleButtonContent}>
+          <GoogleIcon size={20} />
+          <Text style={styles.googleButtonText}>Sign in with Google</Text>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+}
+
+function GoogleSignInWithBoundary(props: {
+  onSuccess: (idToken: string) => void;
+  onError: (msg: string) => void;
+}) {
+  return (
+    <ErrorBoundary fallbackMessage="Google Sign-In is unavailable.">
+      <GoogleSignInSection {...props} />
+    </ErrorBoundary>
+  );
+}
+
 export default function CoachLoginScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -46,27 +113,7 @@ export default function CoachLoginScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
-  const { request, response, promptAsync } = useGoogleAuth();
-
   const isValid = isValidEmail(email) && password.length > 0;
-
-  // Handle Google auth response
-  useEffect(() => {
-    if (response?.type === 'success') {
-      const idToken = response.authentication?.idToken;
-      if (idToken) {
-        handleGoogleSignIn(idToken);
-      } else {
-        setError('Failed to get Google credentials. Please try again.');
-        setIsGoogleLoading(false);
-      }
-    } else if (response?.type === 'error') {
-      setError('Google sign-in was cancelled or failed.');
-      setIsGoogleLoading(false);
-    } else if (response?.type === 'dismiss') {
-      setIsGoogleLoading(false);
-    }
-  }, [response]);
 
   const handleGoogleSignIn = async (idToken: string) => {
     setIsGoogleLoading(true);
@@ -149,27 +196,14 @@ export default function CoachLoginScreen() {
           </View>
 
           <View style={styles.card}>
-            {/* Google Sign-In Button */}
-            <TouchableOpacity
-              style={styles.googleButton}
-              onPress={() => {
-                setIsGoogleLoading(true);
-                setError('');
+            {/* Google Sign-In Button (isolated with ErrorBoundary) */}
+            <GoogleSignInWithBoundary
+              onSuccess={handleGoogleSignIn}
+              onError={(msg) => {
+                setError(msg);
                 setSetupRequired(false);
-                promptAsync();
               }}
-              disabled={!request || isGoogleLoading || isSubmitting}
-              activeOpacity={0.8}
-            >
-              {isGoogleLoading ? (
-                <ActivityIndicator color={DS_COLORS.text.primary} />
-              ) : (
-                <View style={styles.googleButtonContent}>
-                  <GoogleIcon size={20} />
-                  <Text style={styles.googleButtonText}>Sign in with Google</Text>
-                </View>
-              )}
-            </TouchableOpacity>
+            />
 
             {/* Divider */}
             <View style={styles.dividerContainer}>
