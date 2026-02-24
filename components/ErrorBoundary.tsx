@@ -34,14 +34,16 @@ export default class ErrorBoundary extends React.Component<Props, State> {
           <Text style={styles.message}>
             {this.props.fallbackMessage ?? 'An unexpected error occurred.'}
           </Text>
-          <ScrollView style={styles.errorBox}>
-            <Text style={styles.errorText}>
-              {this.state.error?.message ?? 'Unknown error'}
-            </Text>
-            <Text style={styles.stackText}>
-              {this.state.error?.stack?.slice(0, 500) ?? ''}
-            </Text>
-          </ScrollView>
+          {__DEV__ && (
+            <ScrollView style={styles.errorBox}>
+              <Text style={styles.errorText}>
+                {this.state.error?.message ?? 'Unknown error'}
+              </Text>
+              <Text style={styles.stackText}>
+                {this.state.error?.stack?.slice(0, 500) ?? ''}
+              </Text>
+            </ScrollView>
+          )}
           <TouchableOpacity style={styles.retryButton} onPress={this.handleRetry}>
             <Text style={styles.retryText}>Try Again</Text>
           </TouchableOpacity>
