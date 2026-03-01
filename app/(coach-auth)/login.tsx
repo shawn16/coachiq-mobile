@@ -16,6 +16,7 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import Constants from 'expo-constants';
 import ApexLogo from '@/components/ApexLogo';
 import GoogleIcon from '@/components/GoogleIcon';
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -93,6 +94,17 @@ function GoogleSignInWithBoundary(props: {
   onSuccess: (idToken: string) => void;
   onError: (msg: string) => void;
 }) {
+  const googleAuth = Constants.expoConfig?.extra?.googleAuth;
+  if (!googleAuth?.iosClientId) {
+    return (
+      <TouchableOpacity style={styles.googleButton} disabled>
+        <View style={styles.googleButtonContent}>
+          <GoogleIcon size={20} />
+          <Text style={styles.googleButtonText}>Google Sign-In unavailable</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  }
   return (
     <ErrorBoundary fallbackMessage="Google Sign-In is unavailable.">
       <GoogleSignInSection {...props} />
