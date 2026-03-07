@@ -7,9 +7,7 @@ const config: ExpoConfig = {
   updates: {
     url: "https://u.expo.dev/c6a934fe-7501-4858-9978-adde8e615415",
   },
-  runtimeVersion: {
-    policy: "appVersion",
-  },
+  runtimeVersion: "1.0.0",
   extra: {
     ...appJson.expo.extra,
     googleAuth: {

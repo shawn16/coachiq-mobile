@@ -6,9 +6,11 @@
  */
 import Constants from "expo-constants";
 
-const extraApiUrl = Constants.expoConfig?.extra?.apiBaseUrl as string | undefined;
+const extraApiUrl = Constants.expoConfig?.extra?.apiBaseUrl as
+  | string
+  | undefined;
 
 // Change this URL when moving to production domain.
-const DEFAULT_API_URL = "https://v0-coach-iq-app-build.vercel.app/api/mobile/v1";
+const DEFAULT_API_URL = "https://coachiq.shawnsiemers.com/api/mobile/v1";
 
 export const API_BASE_URL: string = extraApiUrl ?? DEFAULT_API_URL;
